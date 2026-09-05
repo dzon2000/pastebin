@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pastebin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="editor-shell">
+    <label class="visually-hidden" for="paste-text">Paste text</label>
+    <textarea id="paste-text" autofocus spellcheck="false"
+      placeholder="Start typing or paste text here..."></textarea>
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+  </main>
+
+  <button id="create-paste" class="create-button" type="button">Create paste</button>
+
+  <script>
+    const editor = document.querySelector("#paste-text");
+    const button = document.querySelector("#create-paste");
+    const message = document.querySelector("#message");
+
+    async function createPaste() {
+      if (!editor.value) {
+        message.textContent = "Add some text first.";
+        editor.focus();
+        return;
+      }
+
+      button.disabled = true;
+      message.textContent = "Creating paste...";
+      try {
+        const response = await fetch("/api/pastes", {
+          method: "POST",
+          headers: {"Content-Type": "text/plain"},
+          body: editor.value
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "Could not create paste.");
+        }
+        message.textContent = "Paste created: ";
+        const link = document.createElement("a");
+        link.href = result.url;
+        link.textContent = result.url;
+        message.append(link);
+        editor.value = "";
+      } catch (error) {
+        message.textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    button.addEventListener("click", createPaste);
+    editor.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        createPaste();
+      }
+    });
+  </script>
+</body>
+</html>
