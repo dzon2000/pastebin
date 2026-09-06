@@ -26,7 +26,6 @@ textarea {
   min-height: calc(100vh - 2rem);
   resize: none;
   border: 1px solid #303642;
-  border-radius: 0.5rem;
   padding: 1rem;
   background: #1a1e26;
   color: inherit;
@@ -45,7 +44,6 @@ textarea:focus {
   right: 2rem;
   bottom: 2rem;
   border: 0;
-  border-radius: 999px;
   padding: 0.9rem 1.25rem;
   background: #79a8ff;
   color: #10131a;
